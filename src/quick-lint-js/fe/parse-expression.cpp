@@ -1991,13 +1991,15 @@ namespace quick_lint_js
       {
         source_code_span bang_span = this->peek().span();
         this->skip();
-        if (this->peek().type == token_type::equal_equal) {
-          this->diag_reporter_->report(diag_mistyped_strict_inequality_operator{
-              .non_null_assertion = source_code_span(bang_span.begin(), this->peek().span().end()),
-            }); 
+        if (this->options_.typescript) {
+          if (this->peek().type == token_type::equal_equal) {
+            this->diag_reporter_->report(diag_mistyped_strict_inequality_operator{
+                .non_null_assertion = source_code_span(
+                  bang_span.begin(), this->peek().span().end()),
+              }); 
+          }
         }
-        else if (!this->options_.typescript)
-        {
+        else {
           this->diag_reporter_->report(
               diag_typescript_non_null_assertion_not_allowed_in_javascript{
                   .bang = bang_span,
